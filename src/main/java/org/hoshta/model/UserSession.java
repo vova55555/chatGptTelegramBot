@@ -1,15 +1,16 @@
-package org.vladyka.model;
+package org.hoshta.model;
 
 import lombok.Builder;
 import lombok.Data;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import org.vladyka.enums.ConversationState;
+import org.hoshta.enums.ConversationState;
+
+import java.util.Locale;
 
 @Data
 @Builder
 public class UserSession {
     private Long chatId;
     private ConversationState state;
-    private String city;
     private String text;
+    private Locale locale;
 }

@@ -1,4 +1,4 @@
-package org.vladyka.model;
+package org.hoshta.model;
 
 import lombok.Builder;
 import lombok.Data;

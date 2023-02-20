@@ -1,4 +1,4 @@
-package org.vladyka.service;
+package org.hoshta.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
-import org.vladyka.sender.VolunteerHelpBotSender;
+import org.hoshta.sender.OpenAIChatBot;
 
 /**
  * This service allows to communicate with Telegram API
@@ -15,9 +15,9 @@ import org.vladyka.sender.VolunteerHelpBotSender;
 @Component
 public class TelegramService {
 
-    private final VolunteerHelpBotSender botSender;
+    private final OpenAIChatBot botSender;
 
-    public TelegramService(VolunteerHelpBotSender botSender) {
+    public TelegramService(OpenAIChatBot botSender) {
         this.botSender = botSender;
     }
 

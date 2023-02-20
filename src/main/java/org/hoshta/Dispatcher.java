@@ -1,8 +1,8 @@
-package org.vladyka;
+package org.hoshta;
 
 import org.springframework.stereotype.Component;
-import org.vladyka.handler.UserRequestHandler;
-import org.vladyka.model.UserRequest;
+import org.hoshta.handler.UserRequestHandler;
+import org.hoshta.model.UserRequest;
 
 import java.util.Comparator;
 import java.util.List;

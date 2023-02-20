@@ -1,4 +1,4 @@
-package org.vladyka.sender;
+package org.hoshta.sender;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,12 +8,12 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 @Slf4j
 @Component
-public class VolunteerHelpBotSender extends DefaultAbsSender {
+public class OpenAIChatBot extends DefaultAbsSender {
 
     @Value("${bot.token}")
     private String botToken;
 
-    protected VolunteerHelpBotSender() {
+    protected OpenAIChatBot() {
         super(new DefaultBotOptions());
     }
 

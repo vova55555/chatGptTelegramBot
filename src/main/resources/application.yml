@@ -1,3 +1,8 @@
 bot:
-  token: <bot-token>
-  username: <username>
+  token: 6296745250:AAF2zlmxFRervE53JK5sD4JwGr93oo-6i_o
+  username: vova_hunter_chat_gtp_bot
+open-ai:
+  token: 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
+  timeout-in-seconds: 60
+  davinchi-model: text-davinci-003
+  max-tokens: 2048

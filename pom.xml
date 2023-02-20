@@ -4,9 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.vladyka</groupId>
-    <artifactId>volunteer-bot</artifactId>
+    <groupId>org.hoshta</groupId>
+    <artifactId>chatgpt-bot</artifactId>
     <version>1.0</version>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
 
     <parent>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -24,6 +34,7 @@
         <commons-logging.version>1.2</commons-logging.version>
         <lombok.version>1.18.20</lombok.version>
         <spring-boot.version>2.5.9</spring-boot.version>
+        <start-class>org.hoshta.Application</start-class>
     </properties>
 
     <dependencies>
@@ -52,6 +63,19 @@
             <version>${telegrambots.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.theokanning.openai-gpt3-java/service -->
+        <dependency>
+            <groupId>com.theokanning.openai-gpt3-java</groupId>
+            <artifactId>service</artifactId>
+            <version>0.10.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.theokanning.openai-gpt3-java/api -->
+        <dependency>
+            <groupId>com.theokanning.openai-gpt3-java</groupId>
+            <artifactId>api</artifactId>
+            <version>0.10.0</version>
+        </dependency>
     </dependencies>
+
 
 </project>
