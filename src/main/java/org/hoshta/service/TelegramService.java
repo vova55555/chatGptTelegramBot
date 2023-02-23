@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 /**
  * This service allows to communicate with Telegram API
@@ -34,7 +35,11 @@ public class TelegramService {
                 .parseMode(ParseMode.HTML)
                 .replyMarkup(replyKeyboard)
                 .build();
-        execute(sendMessage);
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            logErrorAdnInformUser(e, chatId);
+        }
     }
 
     public void sendPhoto(Long chatId, InputFile photo, ReplyKeyboard replyKeyboard) {
@@ -43,22 +48,25 @@ public class TelegramService {
                 .photo(photo)
                 .replyMarkup(replyKeyboard)
                 .build();
-        execute(sendPhoto);
-    }
-
-    private void execute(SendMessage sendMessage) {
         try {
-            botSender.execute(sendMessage);
-        } catch (Exception e) {
-            log.error("Exception: ", e);
+            execute(sendPhoto);
+        } catch (TelegramApiException e) {
+            logErrorAdnInformUser(e, chatId);
         }
     }
 
-    private void execute(SendPhoto sendPhoto) {
-        try {
-            botSender.execute(sendPhoto);
-        } catch (Exception e) {
-            log.error("Exception: ", e);
-        }
+    private void execute(SendMessage sendMessage) throws TelegramApiException {
+        botSender.execute(sendMessage);
+    }
+
+    private void execute(SendPhoto sendPhoto) throws TelegramApiException {
+        botSender.execute(sendPhoto);
+    }
+
+    public void logErrorAdnInformUser(Exception e, Long chatId) {
+        String errorMessage = e.getMessage();
+        log.error(errorMessage);
+        e.printStackTrace();
+        sendMessage(chatId, errorMessage);
     }
 }

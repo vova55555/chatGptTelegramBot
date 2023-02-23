@@ -4,10 +4,10 @@ import org.hoshta.enums.ConversationState;
 import org.hoshta.helper.KeyboardHelper;
 import org.hoshta.model.UserRequest;
 import org.hoshta.model.UserSession;
+import org.hoshta.service.OpenAiCustomService;
 import org.hoshta.service.TelegramService;
 import org.hoshta.service.UserSessionService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
@@ -18,26 +18,23 @@ import static org.hoshta.constant.Constants.BUNDLE_NAME;
 
 public abstract class UserRequestHandler {
 
-    @Value("${open-ai.token}")
-    protected String openAiToken;
-
-    @Value("${open-ai.timeout-in-seconds}")
-    protected long timeOut;
-
-    @Value("${open-ai.davinchi-model}")
-    protected String daVinchiModel;
-
-    @Value("${open-ai.max-tokens}")
-    protected int maxTokens;
-
     protected final UserSessionService userSessionService;
     protected final KeyboardHelper keyboardHelper;
     protected final TelegramService telegramService;
+    protected final OpenAiCustomService openAiCustomService;
 
-    protected UserRequestHandler(UserSessionService userSessionService,
-                                 TelegramService telegramService, KeyboardHelper keyboardHelper) {
+    protected UserRequestHandler(UserSessionService userSessionService, TelegramService telegramService,
+                                 OpenAiCustomService openAiCustomService,KeyboardHelper keyboardHelper) {
         this.userSessionService = userSessionService;
         this.keyboardHelper = keyboardHelper;
+        this.openAiCustomService = openAiCustomService;
+        this.telegramService = telegramService;
+    }
+
+    public UserRequestHandler(UserSessionService userSessionService, TelegramService telegramService, KeyboardHelper keyboardHelper) {
+        this.userSessionService = userSessionService;
+        this.keyboardHelper = keyboardHelper;
+        this.openAiCustomService = null;
         this.telegramService = telegramService;
     }
 
@@ -64,12 +61,20 @@ public abstract class UserRequestHandler {
         userSessionService.saveSession(userRequest.getChatId(), userSession);
     }
 
-    protected UserSession getUserSession(UserRequest userRequest) {
+    protected static UserSession getUserSession(UserRequest userRequest) {
         return userRequest.getUserSession();
     }
 
-    protected String getTranslation(UserRequest request, String translationKey) {
-        return ResourceBundle.getBundle(BUNDLE_NAME, getUserSession(request).getLocale())
+    protected ConversationState getState(UserRequest userRequest) {
+        return getUserSession(userRequest).getState();
+    }
+
+    protected static Locale getLocale(UserRequest userRequest) {
+        return getUserSession(userRequest).getLocale();
+    }
+
+    public static String getTranslation(UserRequest request, String translationKey) {
+        return ResourceBundle.getBundle(BUNDLE_NAME, getLocale(request))
                 .getString(translationKey);
     }
 
@@ -79,7 +84,7 @@ public abstract class UserRequestHandler {
     }
 
     protected void sendSelectYourPlansMessage(UserRequest request) {
-        ReplyKeyboardMarkup replyKeyboardMarkup = keyboardHelper.buildPlanSelectionMenuWithBack(getUserSession(request).getLocale());
+        ReplyKeyboardMarkup replyKeyboardMarkup = keyboardHelper.buildPlanSelectionMenuWithBack(getLocale(request));
         telegramService.sendMessage(request.getChatId(), getTranslation(request, "yourPlans"), replyKeyboardMarkup);
     }
 

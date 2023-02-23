@@ -4,7 +4,6 @@ import org.hoshta.enums.ConversationState;
 import org.hoshta.handler.UserRequestHandler;
 import org.hoshta.helper.KeyboardHelper;
 import org.hoshta.model.UserRequest;
-import org.hoshta.model.UserSession;
 import org.hoshta.service.TelegramService;
 import org.hoshta.service.UserSessionService;
 import org.springframework.stereotype.Component;
@@ -13,6 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 
 import java.util.Locale;
+import java.util.Objects;
 
 @Component
 public class StartCommandHandler extends UserRequestHandler {
@@ -31,8 +31,7 @@ public class StartCommandHandler extends UserRequestHandler {
     public void handle(UserRequest request) {
         ReplyKeyboard replyKeyboard = keyboardHelper.buildSelectLanguageMenu();
         String userDefaultLanguage = request.getUpdate().getMessage().getFrom().getLanguageCode();
-        UserSession userSession = getUserSession(request);
-        Locale userLocale = userSession.getLocale() == null ? new Locale(userDefaultLanguage) : userSession.getLocale();
+        Locale userLocale = Objects.isNull(getLocale(request)) ? new Locale(userDefaultLanguage) : getLocale(request);
         setUserSessionStateAndLocale(request, userLocale, ConversationState.WAITING_FOR_LANGUAGE);
         telegramService.sendMessage(request.getChatId(), getTranslation(request, "selectLanguage"), replyKeyboard);
     }
@@ -46,6 +45,6 @@ public class StartCommandHandler extends UserRequestHandler {
     public boolean isCommand(Update update, String command) {
         Message message = update.getMessage();
         return isTextMessage(update) && message.isCommand()
-                && message.getText().equals(command);
+                && Objects.equals(message.getText(), command);
     }
 }

@@ -7,6 +7,8 @@ import org.hoshta.service.TelegramService;
 import org.hoshta.service.UserSessionService;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 import static org.hoshta.constant.Constants.IMAGE_UNICODE;
 import static org.hoshta.constant.Constants.PEN_UNICODE;
 import static org.hoshta.enums.ConversationState.*;
@@ -21,7 +23,7 @@ public class PlansHandler extends UserRequestHandler {
     @Override
     public boolean isApplicable(UserRequest request) {
         return isTextMessage(request.getUpdate())
-                && WAITING_FOR_PLANS.equals(request.getUserSession().getState());
+                && Objects.equals(getState(request), WAITING_FOR_PLANS);
     }
 
     @Override
@@ -30,12 +32,12 @@ public class PlansHandler extends UserRequestHandler {
         String expectedImageBtnText = IMAGE_UNICODE + getTranslation(request, "imgGeneratedBtn");
         String expectedAnswerBtnText = PEN_UNICODE + getTranslation(request, "textAnswerBtn");
         String expectedBackBtnText = getTranslation(request, "backBtn");
-        if (messageText.equals(expectedAnswerBtnText)) {
+        if (Objects.equals(messageText, expectedAnswerBtnText)) {
             sendEnterYourQuestionMessages(request);
-        } else if (messageText.equals(expectedImageBtnText)) {
+        } else if (Objects.equals(messageText, expectedImageBtnText)) {
             sendEnterImageDescriptionMessage(request);
-        } else if (messageText.equals(expectedBackBtnText)) {
-            setUserSessionStateAndLocale(request, getUserSession(request).getLocale(), WAITING_FOR_PLANS);
+        } else if (Objects.equals(messageText, expectedBackBtnText)) {
+            setUserSessionStateAndLocale(request, getLocale(request), WAITING_FOR_PLANS);
             sendSelectYourPlansMessage(request);
         }
         else {
@@ -50,7 +52,7 @@ public class PlansHandler extends UserRequestHandler {
 
     private void sendEnterImageDescriptionMessage(UserRequest request) {
         telegramService.sendMessage(request.getChatId(), getTranslation(request, "imageDescriptionTooltip"),
-                keyboardHelper.buildMenuWithBackBtnOnly(getUserSession(request).getLocale()));
+                keyboardHelper.buildMenuWithBackBtnOnly(getLocale(request)));
         setUserSessionState(request, WAITING_FOR_IMAGE_DESCRIPTION);
     }
 
@@ -58,7 +60,7 @@ public class PlansHandler extends UserRequestHandler {
         Long chatId = request.getChatId();
         telegramService.sendMessage(chatId, getTranslation(request, "greeting"));
         telegramService.sendMessage(chatId, getTranslation(request, "conversationTooltip"),
-                keyboardHelper.buildMenuWithBackBtnOnly(getUserSession(request).getLocale()));
+                keyboardHelper.buildMenuWithBackBtnOnly(getLocale(request)));
         setUserSessionState(request, WAITING_FOR_QUESTION);
     }
 }

@@ -8,6 +8,8 @@ import org.hoshta.service.TelegramService;
 import org.hoshta.service.UserSessionService;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 import static org.hoshta.enums.ConversationState.*;
 
 @Component
@@ -28,17 +30,17 @@ public class NotTextHandler extends UserRequestHandler {
     @Override
     public void handle(UserRequest request) {
         Long chatId = request.getChatId();
-        ConversationState actualState = getUserSession(request).getState();
-        if (actualState.equals(WAITING_FOR_LANGUAGE)) {
+        ConversationState actualState = getState(request);
+        if (Objects.equals(actualState, WAITING_FOR_LANGUAGE)) {
             telegramService.sendMessage(chatId, getTranslation(request, "notTextLanguageError"));
             languageSelectionHandler.handle(request);
-        } else if (actualState.equals(WAITING_FOR_QUESTION)) {
+        } else if (Objects.equals(actualState, WAITING_FOR_QUESTION)) {
             telegramService.sendMessage(chatId, getTranslation(request, "notTextChatError"));
             telegramService.sendMessage(chatId, getTranslation(request, "conversationTooltip"));
-        } else if(actualState.equals(WAITING_FOR_IMAGE_DESCRIPTION)) {
+        } else if (Objects.equals(actualState, WAITING_FOR_IMAGE_DESCRIPTION)) {
             telegramService.sendMessage(chatId, getTranslation(request, "notTextChatError"));
-        }
-        else {
+            telegramService.sendMessage(chatId, getTranslation(request, "imageDescriptionTooltip"));
+        } else {
             telegramService.sendMessage(chatId, getTranslation(request, "notTextLanguageError"));
             telegramService.sendMessage(chatId, getTranslation(request, "errorMessagePlanSelection"));
         }
