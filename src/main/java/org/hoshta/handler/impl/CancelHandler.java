@@ -1,38 +1,61 @@
 package org.hoshta.handler.impl;
 
-import lombok.AllArgsConstructor;
 import org.hoshta.enums.ConversationState;
 import org.hoshta.handler.UserRequestHandler;
+import org.hoshta.helper.KeyboardHelper;
 import org.hoshta.model.UserRequest;
+import org.hoshta.model.UserSession;
+import org.hoshta.service.TelegramService;
+import org.hoshta.service.UserSessionService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import static org.hoshta.constant.Constants.BUNDLE_NAME;
+import static org.hoshta.enums.ConversationState.*;
 
 @Component
-@AllArgsConstructor
 public class CancelHandler extends UserRequestHandler {
 
     private final StartCommandHandler startCommandHandler;
+    private final LanguageSelectionHandler languageSelectionHandler;
+    private final PlansHandler plansHandler;
 
-    @Override
-    public boolean isApplicable(UserRequest userRequest) {
-        Update update = userRequest.getUpdate();
-        Locale locale = userRequest.getUserSession().getLocale();
-        if (locale != null) {
-            String backBtn = ResourceBundle.getBundle(BUNDLE_NAME, locale).getString("backBtn");
-            return isTextMessage(update) && update.getMessage().getText().equals(backBtn)
-                    && ConversationState.WAITING_FOR_TEXT.equals(userRequest.getUserSession().getState());
-        }
-        return false;
+    public CancelHandler(UserSessionService userSessionService, TelegramService telegramService,
+                         KeyboardHelper keyboardHelper, StartCommandHandler startCommandHandler,
+                         LanguageSelectionHandler languageSelectionHandler, PlansHandler plansHandler) {
+        super(userSessionService, telegramService, keyboardHelper);
+        this.startCommandHandler = startCommandHandler;
+        this.languageSelectionHandler = languageSelectionHandler;
+        this.plansHandler = plansHandler;
     }
 
     @Override
-    public void handle(UserRequest userRequest) {
-        startCommandHandler.handle(userRequest);
+    public boolean isApplicable(UserRequest request) {
+        if (request.getUserSession().getLocale() == null) {
+            return false;
+        }
+        Update update = request.getUpdate();
+        if (!isTextMessage(update)) {
+            return false;
+        }
+        if (!update.getMessage().getText().equals(getTranslation(request, "backBtn"))) {
+            return false;
+        }
+        ConversationState actualState = getUserSession(request).getState();
+        if (actualState == null) {
+            return false;
+        }
+        return actualState.equals(WAITING_FOR_QUESTION) || actualState.equals(WAITING_FOR_PLANS)
+                || actualState.equals(WAITING_FOR_IMAGE_DESCRIPTION);
+    }
+
+    @Override
+    public void handle(UserRequest request) {
+        ConversationState actualState = getUserSession(request).getState();
+        if (actualState.equals(WAITING_FOR_PLANS)) {
+            startCommandHandler.handle(request);
+        } else if (actualState.equals(WAITING_FOR_QUESTION) || actualState.equals(WAITING_FOR_IMAGE_DESCRIPTION)) {
+            plansHandler.handle(request);
+        }
     }
 
     @Override

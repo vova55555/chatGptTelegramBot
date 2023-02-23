@@ -9,7 +9,7 @@ import java.util.Map;
 @Component
 public class UserSessionService {
 
-    private Map<Long, UserSession> userSessionMap = new HashMap<>();
+    private final Map<Long, UserSession> userSessionMap = new HashMap<>();
 
     public UserSession getSession(Long chatId) {
         return userSessionMap.getOrDefault(chatId, UserSession

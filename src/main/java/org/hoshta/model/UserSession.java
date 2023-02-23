@@ -11,6 +11,6 @@ import java.util.Locale;
 public class UserSession {
     private Long chatId;
     private ConversationState state;
-    private String text;
     private Locale locale;
+    private String text;
 }

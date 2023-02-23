@@ -1,12 +1,13 @@
 package org.hoshta.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hoshta.sender.OpenAIChatBot;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
-import org.hoshta.sender.OpenAIChatBot;
 
 /**
  * This service allows to communicate with Telegram API
@@ -29,17 +30,33 @@ public class TelegramService {
         SendMessage sendMessage = SendMessage
                 .builder()
                 .text(text)
-                .chatId(chatId.toString())
-                //Other possible parse modes: MARKDOWNV2, MARKDOWN, which allows to make text bold, and all other things
+                .chatId(String.valueOf(chatId))
                 .parseMode(ParseMode.HTML)
                 .replyMarkup(replyKeyboard)
                 .build();
         execute(sendMessage);
     }
 
-    private void execute(BotApiMethod botApiMethod) {
+    public void sendPhoto(Long chatId, InputFile photo, ReplyKeyboard replyKeyboard) {
+        SendPhoto sendPhoto = SendPhoto.builder()
+                .chatId(String.valueOf(chatId))
+                .photo(photo)
+                .replyMarkup(replyKeyboard)
+                .build();
+        execute(sendPhoto);
+    }
+
+    private void execute(SendMessage sendMessage) {
         try {
-            botSender.execute(botApiMethod);
+            botSender.execute(sendMessage);
+        } catch (Exception e) {
+            log.error("Exception: ", e);
+        }
+    }
+
+    private void execute(SendPhoto sendPhoto) {
+        try {
+            botSender.execute(sendPhoto);
         } catch (Exception e) {
             log.error("Exception: ", e);
         }

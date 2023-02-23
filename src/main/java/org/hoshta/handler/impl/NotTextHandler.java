@@ -1,21 +1,24 @@
 package org.hoshta.handler.impl;
 
-import lombok.AllArgsConstructor;
-import org.hoshta.constant.Constants;
 import org.hoshta.enums.ConversationState;
 import org.hoshta.handler.UserRequestHandler;
+import org.hoshta.helper.KeyboardHelper;
 import org.hoshta.model.UserRequest;
 import org.hoshta.service.TelegramService;
+import org.hoshta.service.UserSessionService;
 import org.springframework.stereotype.Component;
 
-import java.util.ResourceBundle;
+import static org.hoshta.enums.ConversationState.*;
 
 @Component
-@AllArgsConstructor
 public class NotTextHandler extends UserRequestHandler {
-    private final TelegramService telegramService;
     private final LanguageSelectionHandler languageSelectionHandler;
-    private final TextEnteredHandler textEnteredHandler;
+
+    public NotTextHandler(UserSessionService userSessionService, TelegramService telegramService,
+                          KeyboardHelper keyboardHelper, LanguageSelectionHandler languageSelectionHandler) {
+        super(userSessionService, telegramService, keyboardHelper);
+        this.languageSelectionHandler = languageSelectionHandler;
+    }
 
     @Override
     public boolean isApplicable(UserRequest request) {
@@ -24,15 +27,20 @@ public class NotTextHandler extends UserRequestHandler {
 
     @Override
     public void handle(UserRequest request) {
-        ConversationState state = request.getUserSession().getState();
         Long chatId = request.getChatId();
-        ResourceBundle bundle = ResourceBundle.getBundle(Constants.BUNDLE_NAME, request.getUserSession().getLocale());
-        if (state.equals(ConversationState.WAITING_FOR_LANGUAGE)) {
-            telegramService.sendMessage(chatId, bundle.getString("notTextLanguageError"));
+        ConversationState actualState = getUserSession(request).getState();
+        if (actualState.equals(WAITING_FOR_LANGUAGE)) {
+            telegramService.sendMessage(chatId, getTranslation(request, "notTextLanguageError"));
             languageSelectionHandler.handle(request);
-        } else {
-            telegramService.sendMessage(chatId, bundle.getString("notTextChatError"));
-            telegramService.sendMessage(chatId, bundle.getString("conversationTooltip"));
+        } else if (actualState.equals(WAITING_FOR_QUESTION)) {
+            telegramService.sendMessage(chatId, getTranslation(request, "notTextChatError"));
+            telegramService.sendMessage(chatId, getTranslation(request, "conversationTooltip"));
+        } else if(actualState.equals(WAITING_FOR_IMAGE_DESCRIPTION)) {
+            telegramService.sendMessage(chatId, getTranslation(request, "notTextChatError"));
+        }
+        else {
+            telegramService.sendMessage(chatId, getTranslation(request, "notTextLanguageError"));
+            telegramService.sendMessage(chatId, getTranslation(request, "errorMessagePlanSelection"));
         }
     }
 

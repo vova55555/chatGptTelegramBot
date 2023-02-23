@@ -11,7 +11,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import static org.hoshta.constant.Constants.BUNDLE_NAME;
+import static org.hoshta.constant.Constants.*;
 
 /**
  * Helper class, allows to build keyboards for users
@@ -49,9 +49,9 @@ public class KeyboardHelper {
                 .build();
     }
 
-    public ReplyKeyboardMarkup buildMenuWithBack(Locale locale) {
+    public ReplyKeyboardMarkup buildMenuWithBackBtnOnly(Locale locale) {
         KeyboardRow keyboardRow = new KeyboardRow();
-        keyboardRow.add(ResourceBundle.getBundle(BUNDLE_NAME, locale).getString("backBtn"));
+        keyboardRow.add(getTranslation("backBtn", locale));
 
         return ReplyKeyboardMarkup.builder()
                 .keyboard(List.of(keyboardRow))
@@ -59,5 +59,40 @@ public class KeyboardHelper {
                 .resizeKeyboard(true)
                 .oneTimeKeyboard(false)
                 .build();
+    }
+
+    public ReplyKeyboardMarkup buildMenuWithBackAndRegenerateBtns(Locale locale) {
+        KeyboardRow keyboardRow = new KeyboardRow();
+        keyboardRow.add(getTranslation("backBtn", locale));
+
+        KeyboardRow keyboardRow1 = new KeyboardRow();
+        keyboardRow1.add(getTranslation("regenerateBtn", locale));
+
+        return ReplyKeyboardMarkup.builder()
+                .keyboard(List.of(keyboardRow1, keyboardRow))
+                .selective(true)
+                .resizeKeyboard(true)
+                .oneTimeKeyboard(false)
+                .build();
+    }
+
+    public ReplyKeyboardMarkup buildPlanSelectionMenuWithBack(Locale locale) {
+        KeyboardRow keyboardRow = new KeyboardRow();
+        String imageGeneratedButton = IMAGE_UNICODE + getTranslation("imgGeneratedBtn", locale);
+        String textAnswerBtn = PEN_UNICODE + getTranslation("textAnswerBtn", locale);
+        keyboardRow.addAll(List.of(imageGeneratedButton, textAnswerBtn));
+        KeyboardRow secondRow = new KeyboardRow();
+        secondRow.add(getTranslation("backBtn", locale));
+
+        return ReplyKeyboardMarkup.builder()
+                .keyboard(List.of(keyboardRow, secondRow))
+                .selective(true)
+                .resizeKeyboard(true)
+                .oneTimeKeyboard(false)
+                .build();
+    }
+
+    private String getTranslation(String key, Locale locale) {
+        return ResourceBundle.getBundle(BUNDLE_NAME, locale).getString(key);
     }
 }
