@@ -22,7 +22,7 @@ import java.util.Objects;
 @Service
 public class OpenAiCustomService {
 
-    @Value("${open-ai.token}")
+    @Value("${CHAT_GPT_TOKEN}")
     private String openAiToken;
 
     @Value("${open-ai.timeout-in-seconds}")

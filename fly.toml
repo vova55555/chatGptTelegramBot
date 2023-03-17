@@ -9,6 +9,9 @@ processes = []
   image = "vova5555/first-docker-repo:latest"
 
 [env]
+ BOT_USERNAME="vova_hunter_chat_gtp_bot"
+ BOT_TOKEN="BOT_TOKEN"
+ CHAT_GPT_TOKEN="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"
 
 [experimental]
   auto_rollback = true

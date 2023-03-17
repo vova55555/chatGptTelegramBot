@@ -1,5 +1,4 @@
 open-ai:
-  token: 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
   timeout-in-seconds: 60
   davinchi-model: text-davinci-003
   chat-model: gpt-3.5-turbo
