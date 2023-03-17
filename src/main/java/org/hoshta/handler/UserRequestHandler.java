@@ -51,13 +51,13 @@ public abstract class UserRequestHandler {
         UserSession userSession = getUserSession(userRequest);
         userSession.setState(conversationState);
         userSession.setLocale(selectedLocale);
-        userSessionService.saveSession(userRequest.getChatId(), userSession);
+        userSessionService.saveSession(userSession);
     }
 
     protected void setUserSessionState(UserRequest userRequest, ConversationState conversationState) {
         UserSession userSession = getUserSession(userRequest);
         userSession.setState(conversationState);
-        userSessionService.saveSession(userRequest.getChatId(), userSession);
+        userSessionService.saveSession(userSession);
     }
 
     protected static UserSession getUserSession(UserRequest userRequest) {

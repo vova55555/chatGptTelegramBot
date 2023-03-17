@@ -43,7 +43,7 @@ public class ImageDescriptionHandler extends UserRequestHandler {
         String prompt;
         if (!Objects.equals(messageText, getTranslation(request, "regenerateBtn"))) {
             userSession.setText(messageText);
-            userSessionService.saveSession(chatId, userSession);
+            userSessionService.saveSession(userSession);
             prompt = messageText;
         } else {
             prompt = userSession.getText();
