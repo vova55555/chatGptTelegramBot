@@ -1,24 +1,35 @@
 package org.hoshta.service;
 
-import org.springframework.stereotype.Component;
+import org.hoshta.controllers.UserSessionController;
 import org.hoshta.model.UserSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
+@Service
 public class UserSessionService {
 
     private final Map<Long, UserSession> userSessionMap = new HashMap<>();
+    private final UserSessionController userSessionController;
 
-    public UserSession getSession(Long chatId) {
-        return userSessionMap.getOrDefault(chatId, UserSession
-                .builder()
-                .chatId(chatId)
-                .build());
+    @Autowired
+    public UserSessionService(UserSessionController userSessionController) {
+        this.userSessionController = userSessionController;
+    }
+
+    public UserSession getSession(Message message) {
+        return userSessionController.getUserSessionOrSaveDefault(message);
+//        return userSessionMap.getOrDefault(chatId, UserSession
+//                .builder()
+//                .chatId(chatId)
+//                .build());
     }
 
     public UserSession saveSession(Long chatId, UserSession session) {
-        return userSessionMap.put(chatId, session);
+        return userSessionController.saveUserSession(session);
+//        return userSessionMap.put(chatId, session);
     }
 }

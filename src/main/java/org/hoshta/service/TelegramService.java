@@ -1,8 +1,10 @@
 package org.hoshta.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hoshta.sender.OpenAIChatBot;
-import org.springframework.stereotype.Component;
+import org.hoshta.sender.BotSender;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.ForwardMessage;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -14,12 +16,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
  * This service allows to communicate with Telegram API
  */
 @Slf4j
-@Component
+@Service
 public class TelegramService {
 
-    private final OpenAIChatBot botSender;
-
-    public TelegramService(OpenAIChatBot botSender) {
+    private final BotSender botSender;
+    @Autowired
+    public TelegramService(BotSender botSender) {
         this.botSender = botSender;
     }
 
@@ -36,9 +38,22 @@ public class TelegramService {
                 .replyMarkup(replyKeyboard)
                 .build();
         try {
-            execute(sendMessage);
+            botSender.execute(sendMessage);
         } catch (TelegramApiException e) {
             logErrorAdnInformUser(e, chatId);
+        }
+    }
+
+    public void forwardMessage(Long fromChatId, Long toChatId, Integer messageId) {
+        ForwardMessage forwardMessage = ForwardMessage.builder()
+                .fromChatId(fromChatId.toString())
+                .chatId(toChatId.toString())
+                .messageId(messageId)
+                .build();
+        try {
+            botSender.execute(forwardMessage);
+        } catch (TelegramApiException e) {
+            logErrorAdnInformUser(e, toChatId);
         }
     }
 
@@ -49,18 +64,10 @@ public class TelegramService {
                 .replyMarkup(replyKeyboard)
                 .build();
         try {
-            execute(sendPhoto);
+            botSender.execute(sendPhoto);
         } catch (TelegramApiException e) {
             logErrorAdnInformUser(e, chatId);
         }
-    }
-
-    private void execute(SendMessage sendMessage) throws TelegramApiException {
-        botSender.execute(sendMessage);
-    }
-
-    private void execute(SendPhoto sendPhoto) throws TelegramApiException {
-        botSender.execute(sendPhoto);
     }
 
     public void logErrorAdnInformUser(Exception e, Long chatId) {

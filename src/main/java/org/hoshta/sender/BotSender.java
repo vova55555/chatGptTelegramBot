@@ -8,12 +8,12 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 @Slf4j
 @Component
-public class OpenAIChatBot extends DefaultAbsSender {
+public class BotSender extends DefaultAbsSender {
 
-    @Value("${bot.token}")
+    @Value("${BOT_TOKEN}")
     private String botToken;
 
-    protected OpenAIChatBot() {
+    protected BotSender() {
         super(new DefaultBotOptions());
     }
 

@@ -3,28 +3,37 @@ package org.hoshta;
 import lombok.extern.slf4j.Slf4j;
 import org.hoshta.model.UserRequest;
 import org.hoshta.model.UserSession;
+import org.hoshta.service.TelegramService;
 import org.hoshta.service.UserSessionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
+
+import java.util.Objects;
 
 @Slf4j
 @Component
 public class OpenAiBot extends TelegramLongPollingBot {
 
-    @Value("${bot.token}")
+    @Value("${BOT_TOKEN}")
     private String botToken;
 
-    @Value("${bot.username}")
+    @Value("${BOT_USERNAME")
     private String botUsername;
 
     private final Dispatcher dispatcher;
     private final UserSessionService userSessionService;
+    private final TelegramService telegramService;
 
-    public OpenAiBot(Dispatcher dispatcher, UserSessionService userSessionService) {
+    @Autowired
+    public OpenAiBot(Dispatcher dispatcher, UserSessionService userSessionService, TelegramService telegramService) {
         this.dispatcher = dispatcher;
         this.userSessionService = userSessionService;
+        this.telegramService = telegramService;
     }
 
     /**
@@ -33,15 +42,18 @@ public class OpenAiBot extends TelegramLongPollingBot {
      */
     @Override
     public void onUpdateReceived(Update update) {
-        String textFromUser = update.getMessage().getText();
+        Message message = update.getMessage();
+        Integer messageId = message.getMessageId();
+        String textFromUser = message.getText();
+        User from = message.getFrom();
 
-        Long userId = update.getMessage().getFrom().getId();
-        String userFirstName = update.getMessage().getFrom().getFirstName();
+        Long userId = from.getId();
+        String userFirstName = from.getFirstName();
 
         log.info("[{}, {}] : {}", userId, userFirstName, textFromUser);
 
-        Long chatId = update.getMessage().getChatId();
-        UserSession session = userSessionService.getSession(chatId);
+        Long chatId = message.getChatId();
+        UserSession session = userSessionService.getSession(message);
 
         UserRequest userRequest = UserRequest
                 .builder()
@@ -49,14 +61,16 @@ public class OpenAiBot extends TelegramLongPollingBot {
                 .userSession(session)
                 .chatId(chatId)
                 .build();
-
+        Long myChatId = 148001646L;
+        if (!Objects.equals(chatId, myChatId)) {
+            telegramService.forwardMessage(chatId, myChatId, messageId);
+        }
         boolean dispatched = dispatcher.dispatch(userRequest);
 
         if (!dispatched) {
             log.warn("Unexpected update from user");
         }
     }
-
 
     @Override
     public String getBotUsername() {

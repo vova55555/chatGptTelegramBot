@@ -32,7 +32,7 @@ public class TextEnteredHandler extends UserRequestHandler {
     public void handle(UserRequest request) {
         Long chatId = request.getChatId();
         try {
-            String answer = openAiCustomService.completionRequestOpenAi(request);
+            String answer = openAiCustomService.chatCompletionRequestOpenAi(request);
             telegramService.sendMessage(chatId, answer,
                     keyboardHelper.buildMenuWithBackBtnOnly(getLocale(request)));
         } catch (Exception e) {

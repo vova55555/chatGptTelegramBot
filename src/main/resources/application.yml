@@ -1,8 +1,13 @@
 bot:
-  token: 6296745250:AAF2zlmxFRervE53JK5sD4JwGr93oo-6i_o
-  username: vova_hunter_chat_gtp_bot
+#  #devBot username
+#  username: BookAudioHunter_bot
+#  #devBot token
+#  token: 560766116:AAG2S7kit2wwc2qsMZ1Is0zgt0C0wVJgs2g
+   token: 6296745250:AAF2zlmxFRervE53JK5sD4JwGr93oo-6i_o
+   username: vova_hunter_chat_gtp_bot
 open-ai:
   token: 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
   timeout-in-seconds: 60
   davinchi-model: text-davinci-003
+  chat-model: gpt-3.5-turbo
   max-tokens: 2048

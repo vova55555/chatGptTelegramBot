@@ -24,7 +24,7 @@ public class StartCommandHandler extends UserRequestHandler {
     @Override
     public boolean isApplicable(UserRequest request) {
         String command = "/start";
-        return isCommand(request.getUpdate(), command);
+        return isCommand(request.getUpdate(), command) || getUserSession(request).getState().equals(ConversationState.STARTED);
     }
 
     @Override

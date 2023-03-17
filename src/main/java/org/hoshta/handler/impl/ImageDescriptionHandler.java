@@ -1,6 +1,5 @@
 package org.hoshta.handler.impl;
 
-import com.theokanning.openai.OpenAiHttpException;
 import org.hoshta.handler.UserRequestHandler;
 import org.hoshta.helper.KeyboardHelper;
 import org.hoshta.model.UserRequest;

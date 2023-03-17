@@ -26,7 +26,7 @@ public class LanguageSelectionHandler extends UserRequestHandler {
 
     @Override
     public boolean isApplicable(UserRequest request) {
-        return isTextMessage(request.getUpdate()) && Objects.equals(getState(request), WAITING_FOR_LANGUAGE);
+        return isTextMessage(request.getUpdate()) && Objects.equals(getState(request), WAITING_FOR_LANGUAGE) ;
     }
 
     @Override

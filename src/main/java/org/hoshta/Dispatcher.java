@@ -1,8 +1,9 @@
 package org.hoshta;
 
-import org.springframework.stereotype.Component;
 import org.hoshta.handler.UserRequestHandler;
 import org.hoshta.model.UserRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.List;
@@ -19,6 +20,7 @@ public class Dispatcher {
      * like command /start which can interrupt any conversation flow.
      * These global handlers should go first in the list
      */
+    @Autowired
     public Dispatcher(List<UserRequestHandler> handlers) {
         this.handlers = handlers
                 .stream()

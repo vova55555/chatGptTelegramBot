@@ -28,9 +28,6 @@ public class CancelHandler extends UserRequestHandler {
 
     @Override
     public boolean isApplicable(UserRequest request) {
-        if (Objects.isNull(getLocale(request))) {
-            return false;
-        }
         Update update = request.getUpdate();
         if (!isTextMessage(update)) {
             return false;

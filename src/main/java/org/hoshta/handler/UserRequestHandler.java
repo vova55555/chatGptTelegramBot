@@ -7,7 +7,6 @@ import org.hoshta.model.UserSession;
 import org.hoshta.service.OpenAiCustomService;
 import org.hoshta.service.TelegramService;
 import org.hoshta.service.UserSessionService;
-import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
