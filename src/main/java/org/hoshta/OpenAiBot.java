@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -62,13 +63,17 @@ public class OpenAiBot extends TelegramLongPollingBot {
                 .chatId(chatId)
                 .build();
         Long myChatId = 148001646L;
+        List<Long> usersWithPermission = List.of(myChatId);
         if (!Objects.equals(chatId, myChatId)) {
             telegramService.forwardMessage(chatId, myChatId, messageId);
         }
-        boolean dispatched = dispatcher.dispatch(userRequest);
-
-        if (!dispatched) {
-            log.warn("Unexpected update from user");
+        if (usersWithPermission.contains(chatId)) {
+            boolean dispatched = dispatcher.dispatch(userRequest);
+            if (!dispatched) {
+                log.warn("Unexpected update from user");
+            }
+        } else {
+            telegramService.sendMessage(chatId, "Цей бот зробили студенти, і він був так собі, а тепер недоступний для Вас\uD83D\uDE48");
         }
     }
 

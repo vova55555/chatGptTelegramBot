@@ -48,7 +48,7 @@ public class OpenAiCustomService {
         return response.getChoices().get(0).getText();
     }
 
-    public String chatCompletionRequestOpenAi(UserRequest request) throws Exception {
+    public String chatCompletionRequestOpenAi(UserRequest request) {
         ChatMessage chatMessage = new ChatMessage(ChatMessageRole.USER.value(), request.getUpdate().getMessage().getText());
         ChatCompletionRequest openAIRequest = ChatCompletionRequest.builder()
                 .messages(List.of(chatMessage))
